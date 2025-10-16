@@ -34,7 +34,7 @@ export default function ProfileDropdown({
         <Link
           href="/profile"
           onClick={() => setIsOpen(false)}
-          className="block w-full px-5 py-3 text-left text-text hover:bg-primary hover:bg-opacity-10 rounded-xl transition-colors duration-200 no-underline"
+          className="block w-full px-5 py-3 text-left text-text hover:text-background hover:bg-primary hover:bg-opacity-10 rounded-xl transition-colors duration-200 no-underline"
         >
           Profile
         </Link>
