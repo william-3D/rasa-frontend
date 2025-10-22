@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rasa Frontend
+
+A personalized recipe discovery platform built with Next.js that helps users find recipes tailored to their dietary needs and health conditions.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: React Query (TanStack Query)
+- **API**: REST API (NestJS backend)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## UI Design Philosophy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Design Principles
+- **Sleek & Modern**: Clean interfaces with smooth transitions and hover effects
+- **Minimalist**: Focus on content with ample white space
+- **Visual Hierarchy**: Clear distinction between hero sections and content areas
+- **Responsive**: Mobile-first approach with adaptive layouts
 
-## Learn More
+### Visual Style
+- **Cards**: Vertical rectangles with images (400x500px aspect ratio)
+- **Shadows**: Layered shadows that lift on hover for depth
+- **Rounded Corners**: Consistent 2xl border radius (rounded-2xl)
+- **Gradients**: Subtle gradients in hero sections (primary/20 to surface/50)
+- **Typography**: Bold headings (text-6xl for hero), clear hierarchy
 
-To learn more about Next.js, take a look at the following resources:
+### Color System
+- Uses CSS variables defined in `globals.css`:
+  - `--background`: Main background
+  - `--surface`: Card backgrounds
+  - `--primary`: Accent color for CTAs and badges
+  - `--text`: Main text color with opacity variants (/70, /60, /50)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Component Patterns
+- **Hero Section**: Gradient background, large title, elevated search bar
+- **Recipe Cards**: Image-first with overlay badges, hover scale effects
+- **Loading States**: Centered spinners with primary color
+- **Infinite Scroll**: Intersection Observer for seamless pagination
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Interactions
+- **Hover Effects**: Scale (110%), lift (-translate-y-1), shadow increase
+- **Transitions**: duration-300 for smooth animations
+- **Focus States**: Ring with primary color for accessibility
+- **Debounced Search**: 300ms delay for optimal UX
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/              # Next.js app router pages
+├── components/       # Reusable UI components
+│   ├── Hero.tsx
+│   └── RecipeCard.tsx
+└── hooks/            # Custom React hooks
+    ├── useRecipes.ts
+    ├── useFilters.ts
+    └── useUserProfile.ts
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Key Features
+
+- Personalized recipe recommendations based on user health conditions
+- Real-time search with debouncing
+- Infinite scroll pagination
+- Allergy and dietary restriction filtering
+- Responsive grid layout (1/2/4 columns)
+
+## Filtering System
+
+### User-Based Filtering (Default)
+On initial load, recipes are automatically filtered based on the user's profile:
+- **Region**: Shows recipes from user's region
+- **Conditions**: Shows recipes suitable for user's health conditions
+- **Allergies**: Excludes recipes containing user's allergens
+
+The subtitle dynamically displays: "Currently showing [region][allergies]-free recipes for [conditions] patients."
+
+### Manual Filtering
+Users can override automatic filtering by using the filter toggle:
+- Click the filter icon next to the search bar
+- Select/deselect regions, conditions, or allergies
+- Multiple selections allowed per category
+- Filter selections are shown as checkboxes in a drawer
+
+**Behavior:**
+- Initial filters reflect user profile and are pre-selected in the filter toggle
+- User can add or remove filters while keeping the initial selections visible
+- Modifying any filter switches from automatic user-based filtering to manual mode
+- In manual mode, only the explicitly selected filters are applied
+- Clearing all filters shows "Currently showing all recipes"
+- Search does not affect filter mode
+
+### Filter Options
+Filter options are fetched dynamically from the backend:
+- **Regions**: All available cuisine regions in database
+- **Conditions**: Health conditions (Diabetes, GERD, Celiac, etc.)
+- **Allergies**: Food allergens (Nuts, Dairy, Gluten, etc.)
+
+### API Integration
+- `GET /recipes/filters` - Fetches available filter options
+- `GET /recipes/user/:userId` - Fetches user profile for initial filters
+- `GET /recipes` - Fetches recipes with filters applied
+  - `useUserFilters=true` - Uses user profile filters
+  - `region`, `condition`, `allergy` - Manual filter parameters
